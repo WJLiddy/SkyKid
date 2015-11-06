@@ -21,13 +21,13 @@ public class Baddie
         animation.autoAnimate("normal", 0);
     }
 
-    public void draw(SpriteBatch sb,int camX)
+    public void draw(AD2SpriteBatch sb,int camX)
     {
         if (explodeTime > 0)
             animation.draw(sb,x - camX, y);
     }
 
-    public void update()
+    public void update(SkyKidGame world)
     {
         if (!dead)
         {
@@ -45,7 +45,7 @@ public class Baddie
       //          y -= 3;
 
 
-            if ( (x - SkyKidGame.player.x) > -300 && Utils.random.NextDouble() < 0.01)
+            if ( (x - world.player.x) > -300 && Utils.random.NextDouble() < 0.01)
             {
                 SkyKidGame.Bullet b = new SkyKidGame.Bullet();
                 b.x = x + width + 2;
@@ -54,7 +54,7 @@ public class Baddie
                 SkyKidGame.bullets.AddFirst(b);
             }
 
-            if (SkyKidGame.level.collide(x, y) || SkyKidGame.level.collide(x + width, y) || SkyKidGame.level.collide(x, y + height) || SkyKidGame.level.collide(x + width, y + height))
+            if (world.level.collide(x, y) || world.level.collide(x + width, y) || world.level.collide(x, y + height) || world.level.collide(x + width, y + height))
             {
                 dead = true;
                 //play once??????

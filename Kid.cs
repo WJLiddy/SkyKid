@@ -24,22 +24,22 @@ public class Kid
         y = 40;
     }
 
-    public void draw(SpriteBatch sb,int camX)
+    public void draw(AD2SpriteBatch sb,int camX)
     {
         if (explodeTime > 0)
             animation.draw(sb, x - camX, y);
     }
 
-    public void update(Microsoft.Xna.Framework.Input.KeyboardState ks)
+    public void update(SkyKidGame world,Microsoft.Xna.Framework.Input.KeyboardState ks)
     {
         if (shootCoolDown != 0)
             shootCoolDown--;
         if (!dead)
         {
 
-            if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) && x > SkyKidGame.camX)
+            if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) && x > world.camX)
                 x -= 5;
-            else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) && x < SkyKidGame.camX + SkyKidGame.baseWidth + -width)
+            else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) && x < world.camX + SkyKidGame.baseWidth + -width)
                 x -= 1;
             else x -= 3;
 
@@ -58,7 +58,7 @@ public class Kid
                 SkyKidGame.bullets.AddFirst(b);
             }
 
-            if (SkyKidGame.level.collide(x, y) || SkyKidGame.level.collide(x + width, y) || SkyKidGame.level.collide(x, y + height) || SkyKidGame.level.collide(x + width, y + height))
+            if (world.level.collide(x, y) || world.level.collide(x + width, y) || world.level.collide(x, y + height) || world.level.collide(x + width, y + height))
             {
                 dead = true;
                 //play once??????
@@ -82,9 +82,5 @@ public class Kid
 
         }
             animation.update();
-
-
     }
-
-
 }

@@ -1,32 +1,37 @@
-﻿
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System;
 
 public class SkyKidGame : AD2Game
 {
-    public static Texture2D bullet;
-    public static Kid player;
-    public static LinkedList<Baddie> baddies;
-    public static int camX = 2000;
-    public static FlatMap level;
-    public static readonly int baseWidth = 288;
-    public static readonly int baseHeight = 224;
+    // Player character.
+    public Kid player;
+    // List of all the bad guys.
+    public LinkedList<Baddie> baddies;
+    // The camera X
+    public int camX = 2000;
+    // This game's level.
+    public FlatMap level;
 
+    // A quick a dirty bullet container
     public class Bullet
     {
+        public static Texture2D texture;
         public int x;
         public int y;
         public bool left;
     }
 
+    // List of all the bullets.
     public static LinkedList<Bullet> bullets = new LinkedList<Bullet>();
 
-    //Need to initalize stuff specific to the game? Do it here!
+    // Game Dims.
+    public static readonly int baseWidth = 288;
+    public static readonly int baseHeight = 224;
+
     public SkyKidGame() : base(baseWidth, baseHeight, 40)
     {
-
+        //lol stub constructor
     }
 
     public static bool collide(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2 )
@@ -37,17 +42,21 @@ public class SkyKidGame : AD2Game
                 y2 > y1 + h1);
     }
 
-    protected override void ad2Logic(int ms, KeyboardState keyboardState, GamePadState[] gamePadState)
+    protected override void AD2Logic(int ms, KeyboardState keyboardState, GamePadState[] gamePadState)
     {
+        //move the camera left.
         camX -= 3;
         
-        player.update(keyboardState);
+        //update the player.
+        player.update(this,keyboardState);
 
+        //update the baddies.
         foreach (Baddie b in baddies)
         {
-            b.update();
+            b.update(this);
         }
 
+        //do bullet logic. move them and collect the ones that are out of bounds.
         LinkedList<Bullet> outOfBounds = new LinkedList<Bullet>(); ;
         foreach (Bullet b in bullets)
         {
@@ -60,32 +69,29 @@ public class SkyKidGame : AD2Game
                 outOfBounds.AddLast(b);
         }
 
-
         foreach (Bullet b in outOfBounds)
         {
             bullets.Remove(b);
         }
     }
 
-    protected override void ad2Draw()
+    protected override void AD2Draw(AD2SpriteBatch primarySpriteBatch)
     {
-        level.drawBase(renderer.primarySpriteBatch,camX, 0);
-        player.draw(renderer.primarySpriteBatch,camX);
+        level.drawBase(primarySpriteBatch,camX, 0);
+        player.draw(primarySpriteBatch,camX);
 
         foreach (Baddie b in baddies)
         {
-            b.draw(renderer.primarySpriteBatch,camX);
+            b.draw(primarySpriteBatch,camX);
         }
 
         foreach (Bullet b in bullets)
         {
-            //bullet.draw
-            //whatever
-            Renderer.drawTexture(renderer.primarySpriteBatch,bullet, b.x + -2 + -camX, b.y + -2);
+            primarySpriteBatch.drawTexture(Bullet.texture, b.x + -2 + -camX, b.y + -2);
         }
     }
 
-    protected override void ad2LoadContent()
+    protected override void AD2LoadContent()
     {
         baddies = new LinkedList<Baddie>();
         for (int i = 0; i != 50; i++)
@@ -96,7 +102,7 @@ public class SkyKidGame : AD2Game
         player = new Kid();
         //TODO : should not need to pass screen width or height
         level = new FlatMap("map/map.xml", SkyKidGame.baseWidth, SkyKidGame.baseHeight);
-        bullet = Utils.TextureLoader("bullet.png");
+        Bullet.texture = Utils.TextureLoader("bullet.png");
     }
 }
 
