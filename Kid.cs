@@ -1,86 +1,69 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Xna.Framework.Input;
 
-public class Kid
+public class Kid : Plane
 {
-    int width = 22;
-    int height = 17;
-    int explodeTime = 3;
-    public int x = -50;
-    int y = 10;
-    int shootCoolDown = 0;
-    int shootCoolDownMax = 7;
-    bool dead = false;
-    AnimationSet animation;
     public Kid()
     {
-        animation = new AnimationSet(@"kid\kid.xml");
-        animation.speed = 2;
-        animation.autoAnimate("normal", 0);
-        x = 2100;
-        y = 40;
+        Animation = new AnimationSet(@"kid\kid.xml");
+        Animation.Speed = 2;
+        Animation.AutoAnimate("normal", 0);
+        X = 2100;
+        Y = 40;
     }
 
     public void draw(AD2SpriteBatch sb,int camX)
     {
-        if (explodeTime > 0)
-            animation.draw(sb, x - camX, y);
+        //TODO: this is kind of bad
+        if (ExplodeTime > 0)
+            Animation.Draw(sb, X - camX, Y);
     }
 
-    public void update(SkyKidGame world,Microsoft.Xna.Framework.Input.KeyboardState ks)
+    public void update(SkyKidGame world,KeyboardState ks)
     {
-        if (shootCoolDown != 0)
-            shootCoolDown--;
-        if (!dead)
+        if (FramesUntilCanShootAgain != 0)
+            FramesUntilCanShootAgain--;
+
+        if (!Dead)
         {
-
-            if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) && x > world.camX)
-                x -= 5;
-            else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) && x < world.camX + SkyKidGame.baseWidth + -width)
-                x -= 1;
-            else x -= 3;
-
-            if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                y += 3;
-            else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                y -= 3;
-
-            if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.A) && shootCoolDown == 0)
-            {
-                shootCoolDown = shootCoolDownMax;
-                SkyKidGame.Bullet b = new SkyKidGame.Bullet();
-                b.x = x - 2;
-                b.y = y + 5;
-                b.left = true;
-                SkyKidGame.bullets.AddFirst(b);
-            }
-
-            if (world.level.collide(x, y) || world.level.collide(x + width, y) || world.level.collide(x, y + height) || world.level.collide(x + width, y + height))
-            {
-                dead = true;
-                //play once??????
-                animation.autoAnimate("dead", 0);
-            }
-
-            foreach(SkyKidGame.Bullet b in SkyKidGame.bullets )
-            {
-                if (SkyKidGame.collide(b.x, b.y, 1, 1, x, y, width, height))
-                {
-                    dead = true;
-                    //play once??????
-                    animation.autoAnimate("dead", 0);
-                }
-            }
-
+            MovePlane(world, ks);
+            CheckForShoot(world, ks);
+            CheckIfCrashed(world);
+            CheckForBulletCollide(world);
 
         } else
         {
-            explodeTime--;
-
+            ExplodeTime--;
         }
-            animation.update();
+            Animation.Update();
+    }
+
+    private void MovePlane(SkyKidGame world, KeyboardState ks)
+    {
+        // X
+        if (ks.IsKeyDown(Keys.Left) && X > world.CamX)
+            X -= 5;
+        else if (ks.IsKeyDown(Keys.Right) && X < world.CamX + SkyKidGame.BaseWidth + -Width)
+            X -= 1;
+        else X -= 3;
+
+        // Y
+        if (ks.IsKeyDown(Keys.Down))
+            Y += 3;
+        else if (ks.IsKeyDown(Keys.Up))
+            Y -= 3;
+    }
+
+    private void CheckForShoot(SkyKidGame world, KeyboardState ks)
+    {
+        if (ks.IsKeyDown(Keys.A) && FramesUntilCanShootAgain == 0)
+        {
+            FramesUntilCanShootAgain = FramesPerShot;
+            SkyKidGame.Bullet b = new SkyKidGame.Bullet();
+            //Arbitrarily decide where to spawn bullet
+            b.x = X - 2;
+            b.y = Y + 5;
+            b.left = true;
+            SkyKidGame.Bullets.AddFirst(b);
+        }
     }
 }

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 public class SkyKidGame : AD2Game
 {
     // Player character.
-    public Kid player;
+    public Kid Player;
     // List of all the bad guys.
-    public LinkedList<Baddie> baddies;
+    public LinkedList<Baddie> Baddies;
     // The camera X
-    public int camX = 2000;
+    public int CamX = 2000;
     // This game's level.
-    public FlatMap level;
+    public FlatMap Level;
 
     // A quick a dirty bullet container
     public class Bullet
@@ -23,18 +23,19 @@ public class SkyKidGame : AD2Game
     }
 
     // List of all the bullets.
-    public static LinkedList<Bullet> bullets = new LinkedList<Bullet>();
+    public static LinkedList<Bullet> Bullets = new LinkedList<Bullet>();
 
     // Game Dims.
-    public static readonly int baseWidth = 288;
-    public static readonly int baseHeight = 224;
+    public static readonly int BaseWidth = 288;
+    public static readonly int BaseHeight = 224;
 
-    public SkyKidGame() : base(baseWidth, baseHeight, 40)
+    public SkyKidGame() : base(BaseWidth, BaseHeight, 40)
     {
         //lol stub constructor
+        Renderer.Resolution = Renderer.ResolutionType.WindowedLarge;
     }
 
-    public static bool collide(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2 )
+    public static bool Collide(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2 )
     {
         return !(x1 > x2 + w2 ||
                 y1 > y2 + h2 ||
@@ -45,63 +46,63 @@ public class SkyKidGame : AD2Game
     protected override void AD2Logic(int ms, KeyboardState keyboardState, GamePadState[] gamePadState)
     {
         //move the camera left.
-        camX -= 3;
+        CamX -= 3;
         
         //update the player.
-        player.update(this,keyboardState);
+        Player.update(this,keyboardState);
 
         //update the baddies.
-        foreach (Baddie b in baddies)
+        foreach (Baddie b in Baddies)
         {
             b.update(this);
         }
 
         //do bullet logic. move them and collect the ones that are out of bounds.
         LinkedList<Bullet> outOfBounds = new LinkedList<Bullet>(); ;
-        foreach (Bullet b in bullets)
+        foreach (Bullet b in Bullets)
         {
             if (b.left)
                 b.x -= 10;
             else
                 b.x += 5;
 
-            if (camX > b.x)
+            if (CamX > b.x)
                 outOfBounds.AddLast(b);
         }
 
         foreach (Bullet b in outOfBounds)
         {
-            bullets.Remove(b);
+            Bullets.Remove(b);
         }
     }
 
     protected override void AD2Draw(AD2SpriteBatch primarySpriteBatch)
     {
-        level.drawBase(primarySpriteBatch,camX, 0);
-        player.draw(primarySpriteBatch,camX);
+        Level.drawBase(primarySpriteBatch,CamX, 0);
+        Player.draw(primarySpriteBatch,CamX);
 
-        foreach (Baddie b in baddies)
+        foreach (Baddie b in Baddies)
         {
-            b.draw(primarySpriteBatch,camX);
+            b.draw(primarySpriteBatch,CamX);
         }
 
-        foreach (Bullet b in bullets)
+        foreach (Bullet b in Bullets)
         {
-            primarySpriteBatch.drawTexture(Bullet.texture, b.x + -2 + -camX, b.y + -2);
+            primarySpriteBatch.DrawTexture(Bullet.texture, b.x + -2 + -CamX, b.y + -2);
         }
     }
 
     protected override void AD2LoadContent()
     {
-        baddies = new LinkedList<Baddie>();
+        Baddies = new LinkedList<Baddie>();
         for (int i = 0; i != 50; i++)
         {
-            baddies.AddFirst(new Baddie());
+            Baddies.AddFirst(new Baddie());
         }
 
-        player = new Kid();
+        Player = new Kid();
         //TODO : should not need to pass screen width or height
-        level = new FlatMap("map/map.xml", SkyKidGame.baseWidth, SkyKidGame.baseHeight);
+        Level = new FlatMap("map/map.xml", BaseWidth, BaseHeight);
         Bullet.texture = Utils.TextureLoader("bullet.png");
     }
 }

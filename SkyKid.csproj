@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Baddie.cs" />
+    <Compile Include="Plane.cs" />
     <Compile Include="SkyKidGame.cs" />
     <Compile Include="Kid.cs" />
     <Compile Include="Program.cs" />
