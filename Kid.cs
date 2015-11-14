@@ -13,9 +13,7 @@ public class Kid : Plane
 
     public void draw(AD2SpriteBatch sb,int camX)
     {
-        //TODO: this is kind of bad
-        if (ExplodeTime > 0)
-            Animation.Draw(sb, X - camX, Y);
+        Animation.Draw(sb, X - camX, Y);
     }
 
     public void update(SkyKidGame world,KeyboardState ks)
@@ -30,11 +28,9 @@ public class Kid : Plane
             CheckIfCrashed(world);
             CheckForBulletCollide(world);
 
-        } else
-        {
-            ExplodeTime--;
         }
-            Animation.Update();
+
+        Animation.Update();
     }
 
     private void MovePlane(SkyKidGame world, KeyboardState ks)

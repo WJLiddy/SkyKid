@@ -6,9 +6,6 @@
 
     protected int FramesUntilCanShootAgain = 0;
 
-    //TODO: kill this
-    protected int ExplodeTime = 3;
-
     public readonly int Width = 22;
     public readonly int Height = 17;
     public int FramesPerShot { get; protected set; } = 7;
@@ -22,8 +19,7 @@
             if (SkyKidGame.Collide(b.x, b.y, 1, 1, X, Y, Width, Height))
             {
                 Dead = true;
-                //play once??????
-                Animation.AutoAnimate("dead", 0);
+                Animation.AutoAnimateOnce("dead", 0);
             }
         }
     }
@@ -35,7 +31,7 @@
         {
             Dead = true;
             // TODO: play once??????
-            Animation.AutoAnimate("dead", 0);
+            Animation.AutoAnimateOnce("dead", 0);
         }
     }
 }
